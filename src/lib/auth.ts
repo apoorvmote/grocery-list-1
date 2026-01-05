@@ -2,6 +2,8 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from './server/db';
 import { env } from '$env/dynamic/private';
+import { sveltekitCookies } from 'better-auth/svelte-kit';
+import { getRequestEvent } from '$app/server';
 
 export const auth = betterAuth({
 	appName: 'Grocery List',
@@ -15,5 +17,8 @@ export const auth = betterAuth({
 	emailAndPassword: {
 		enabled: true,
 		autoSignIn: false
-	}
+	},
+	plugins: [
+		sveltekitCookies(getRequestEvent)
+	]
 });

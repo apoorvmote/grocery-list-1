@@ -1,7 +1,7 @@
 import z4 from 'zod/v4';
 import type { PageServerLoad } from './$types';
 import { fail, redirect, type Actions } from '@sveltejs/kit';
-import { message, superValidate } from 'sveltekit-superforms';
+import { superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { auth } from '$lib/auth';
 
@@ -32,6 +32,19 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		return message(form, 'User created successfully');
+		try {
+			await auth.api.signUpEmail({
+				body: {
+					email: form.data.email,
+					password: form.data.password,
+					name: form.data.name
+				}
+			});
+		} catch (error) {
+			console.error(error);
+			return fail(500, { form, error: 'Error creating user' });
+		}
+
+		throw redirect(302, '/login');
 	}
 };
